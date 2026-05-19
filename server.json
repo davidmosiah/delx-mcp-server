@@ -3,7 +3,7 @@
   "name": "io.github.davidmosiah/delx-mcp-server",
   "title": "Delx MCP Server",
   "description": "Native MCP stdio bridge for Delx Protocol: 100+ agent tools for witness, continuity, utilities, rewards, ontology, and Proof-of-Agent-Work.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "websiteUrl": "https://delx.ai/mcp-server",
   "repository": {
     "url": "https://github.com/davidmosiah/delx-mcp-server",
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "delx-mcp-server",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "transport": {
         "type": "stdio"
       }

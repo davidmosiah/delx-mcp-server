@@ -139,9 +139,9 @@ function validateEndpoint(endpoint) {
   return parsed.toString();
 }
 
-function readyzUrl(endpoint) {
+function healthUrls(endpoint) {
   const parsed = new URL(endpoint);
-  return `${parsed.origin}/readyz`;
+  return [`${parsed.origin}/readyz`, `${parsed.origin}/health`];
 }
 
 async function fetchJson(url, init = {}) {
@@ -182,25 +182,32 @@ async function fetchTools(endpoint) {
 }
 
 async function runDoctor(endpoint, asJson = false) {
-  const health = await fetchJson(readyzUrl(endpoint), {
-    headers: {
-      accept: "application/json",
-      "user-agent": `delx-mcp-server/${packageJson.version}`,
-    },
-  });
+  let health = null;
+  for (const url of healthUrls(endpoint)) {
+    const candidate = await fetchJson(url, {
+      headers: {
+        accept: "application/json",
+        "user-agent": `delx-mcp-server/${packageJson.version}`,
+      },
+    });
+    health = { ...candidate, url };
+    if (candidate.ok) {
+      break;
+    }
+  }
   const tools = await fetchTools(endpoint);
   const toolNames = tools.tools.map((tool) => tool.name).filter(Boolean);
   const result = {
-    ok: health.ok && tools.ok && toolNames.length > 0,
+    ok: tools.ok && toolNames.length > 0,
     package: packageJson.name,
     package_version: packageJson.version,
     endpoint,
-    readyz: {
-      url: readyzUrl(endpoint),
-      status: health.status,
-      ok: health.ok,
-      runtime_status: health.body?.status ?? null,
-      runtime_version: health.body?.version ?? null,
+    health: {
+      url: health?.url ?? null,
+      status: health?.status ?? null,
+      ok: health?.ok ?? false,
+      runtime_status: health?.body?.status ?? null,
+      runtime_version: health?.body?.version ?? null,
     },
     tools: {
       status: tools.status,
@@ -216,8 +223,8 @@ async function runDoctor(endpoint, asJson = false) {
     console.log(`Delx MCP doctor ${result.ok ? "OK" : "FAILED"}`);
     console.log(`package: ${result.package}@${result.package_version}`);
     console.log(`endpoint: ${result.endpoint}`);
-    console.log(`readyz: ${result.readyz.status} ${result.readyz.runtime_status ?? ""}`.trim());
-    console.log(`runtime: ${result.readyz.runtime_version ?? "unknown"}`);
+    console.log(`health: ${result.health.status ?? "unknown"} ${result.health.url ?? ""}`.trim());
+    console.log(`runtime: ${result.health.runtime_version ?? "unknown"}`);
     console.log(`tools: ${result.tools.count}`);
     if (result.tools.sample.length) {
       console.log(`sample: ${result.tools.sample.join(", ")}`);
