@@ -1,0 +1,17 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      endpoint:
+        type: string
+        default: https://api.delx.ai/v1/mcp
+        description: Remote Delx MCP endpoint. Keep the default unless you operate a compatible Delx deployment.
+  commandFunction: |-
+    (config) => ({
+      command: 'npx',
+      args: ['-y', 'delx-mcp-server', '--url', config.endpoint || 'https://api.delx.ai/v1/mcp']
+    })
+  exampleConfig:
+    endpoint: https://api.delx.ai/v1/mcp

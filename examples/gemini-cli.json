@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "delx": {
+      "command": "npx",
+      "args": ["-y", "delx-mcp-server"]
+    }
+  }
+}

@@ -1,17 +1,23 @@
 {
   "name": "delx-mcp-server",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Native MCP stdio bridge for Delx Protocol: 100+ agent tools from https://api.delx.ai/v1/mcp.",
+  "mcpName": "io.github.davidmosiah/delx-mcp-server",
   "type": "module",
   "bin": {
     "delx-mcp-server": "bin/delx-mcp-server.js"
   },
   "files": [
     "bin",
+    "examples",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "server.json",
+    "smithery.yaml"
   ],
   "scripts": {
+    "doctor": "node bin/delx-mcp-server.js --doctor",
+    "list-tools": "node bin/delx-mcp-server.js --list-tools",
     "test": "node --test",
     "prepublishOnly": "npm test"
   },
@@ -30,7 +36,9 @@
     "agent-tools",
     "witness-protocol",
     "agent-continuity",
-    "proof-of-agent-work"
+    "proof-of-agent-work",
+    "stdio",
+    "mcp-server"
   ],
   "engines": {
     "node": ">=18.0.0"
