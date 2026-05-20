@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
-import { readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { homedir } from "node:os";
 
 const DEFAULT_ENDPOINT = "https://api.delx.ai/v1/mcp";
 const DEFAULT_CLIENT = "generic";
@@ -17,6 +18,10 @@ Native MCP stdio bridge for Delx Protocol.
 
 Usage:
   npx -y delx-mcp-server
+  npx -y delx-mcp-server install claude
+  npx -y delx-mcp-server install cursor
+  npx -y delx-mcp-server install codex
+  npx -y delx-mcp-server install gemini
   npx -y delx-mcp-server --url https://api.delx.ai/v1/mcp
   npx -y delx-mcp-server --doctor
   npx -y delx-mcp-server --list-tools
@@ -26,6 +31,8 @@ Options:
   --url <url>              Remote Delx MCP endpoint. Default: ${DEFAULT_ENDPOINT}
   --endpoint <url>         Alias for --url.
   --print-config [client]  Print MCP client config. client: claude | cursor | gemini | vscode | generic.
+  install <client>         Merge Delx into a local MCP client config.
+  --dry-run                With install, print the target path and resulting config without writing.
   --doctor                 Check Delx API health and MCP tool discovery.
   --list-tools             Print live Delx MCP tool names.
   --json                   Use JSON output with --doctor or --list-tools.
@@ -44,33 +51,137 @@ Claude Desktop / Cursor / Gemini / Copilot config:
 `;
 }
 
-function mcpServersConfig() {
+function mcpServerEntry(endpoint = DEFAULT_ENDPOINT) {
+  const args = ["-y", "delx-mcp-server"];
+  if (endpoint !== DEFAULT_ENDPOINT) {
+    args.push("--url", endpoint);
+  }
+  return {
+    command: "npx",
+    args,
+  };
+}
+
+function mcpServersConfig(endpoint = DEFAULT_ENDPOINT) {
   return {
     mcpServers: {
-      delx: {
-        command: "npx",
-        args: ["-y", "delx-mcp-server"],
-      },
+      delx: mcpServerEntry(endpoint),
     },
   };
 }
 
-function clientConfig(client = DEFAULT_CLIENT) {
+function clientConfigObject(client = DEFAULT_CLIENT, endpoint = DEFAULT_ENDPOINT) {
   const normalized = String(client || DEFAULT_CLIENT).toLowerCase();
-  const config = mcpServersConfig();
+  const config = mcpServersConfig(endpoint);
   if (["vscode", "copilot"].includes(normalized)) {
-    return JSON.stringify({ mcp: { servers: config.mcpServers } }, null, 2);
+    return { mcp: { servers: config.mcpServers } };
   }
-  if (["claude", "cursor", "gemini", "generic"].includes(normalized)) {
-    return JSON.stringify(config, null, 2);
+  if (["claude", "cursor", "gemini", "codex", "generic"].includes(normalized)) {
+    return config;
   }
-  throw new Error(`Unknown client "${client}". Use claude, cursor, gemini, vscode, copilot, or generic.`);
+  throw new Error(`Unknown client "${client}". Use claude, cursor, codex, gemini, vscode, copilot, or generic.`);
+}
+
+function clientConfig(client = DEFAULT_CLIENT, endpoint = DEFAULT_ENDPOINT) {
+  return JSON.stringify(clientConfigObject(client, endpoint), null, 2);
+}
+
+function expandHome(path) {
+  return path.replace(/^~/, homedir());
+}
+
+function clientConfigPath(client) {
+  const normalized = String(client || DEFAULT_CLIENT).toLowerCase();
+  const paths = {
+    claude: "~/Library/Application Support/Claude/claude_desktop_config.json",
+    cursor: "~/.cursor/mcp.json",
+    codex: "~/.codex/mcp.json",
+    gemini: "~/.gemini/mcp.json",
+    vscode: "~/.vscode/mcp.json",
+    copilot: "~/.vscode/mcp.json",
+  };
+  const target = paths[normalized];
+  if (!target) {
+    throw new Error(`Install target "${client}" is not supported. Use claude, cursor, codex, gemini, vscode, or copilot.`);
+  }
+  return expandHome(target);
+}
+
+function mergeClientConfig(existing, client, endpoint) {
+  const normalized = String(client || DEFAULT_CLIENT).toLowerCase();
+  const entry = mcpServerEntry(endpoint);
+  if (["vscode", "copilot"].includes(normalized)) {
+    return {
+      ...existing,
+      mcp: {
+        ...(existing.mcp && typeof existing.mcp === "object" ? existing.mcp : {}),
+        servers: {
+          ...(existing.mcp?.servers && typeof existing.mcp.servers === "object" ? existing.mcp.servers : {}),
+          delx: entry,
+        },
+      },
+    };
+  }
+  return {
+    ...existing,
+    mcpServers: {
+      ...(existing.mcpServers && typeof existing.mcpServers === "object" ? existing.mcpServers : {}),
+      delx: entry,
+    },
+  };
+}
+
+function readJsonFileIfPresent(path) {
+  if (!existsSync(path)) {
+    return {};
+  }
+  const text = readFileSync(path, "utf8").trim();
+  if (!text) {
+    return {};
+  }
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`Cannot parse existing MCP config at ${path}: ${error.message}`);
+  }
+}
+
+function installClientConfig(client, endpoint, { dryRun = false, asJson = false } = {}) {
+  const targetPath = clientConfigPath(client);
+  const existing = readJsonFileIfPresent(targetPath);
+  const nextConfig = mergeClientConfig(existing, client, endpoint);
+  const normalizedClient = String(client || DEFAULT_CLIENT).toLowerCase();
+  const configShape = ["vscode", "copilot"].includes(normalizedClient) ? "mcp.servers" : "mcpServers";
+  const result = {
+    ok: true,
+    client: normalizedClient,
+    target_path: targetPath,
+    dry_run: dryRun,
+    config_shape: configShape,
+    mcp_server: mcpServerEntry(endpoint),
+    changed_server_name: "delx",
+  };
+
+  if (!dryRun) {
+    mkdirSync(dirname(targetPath), { recursive: true });
+    writeFileSync(targetPath, `${JSON.stringify(nextConfig, null, 2)}\n`, "utf8");
+  }
+
+  if (asJson) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(`${dryRun ? "Would install" : "Installed"} Delx MCP config for ${result.client}`);
+    console.log(`path: ${targetPath}`);
+    console.log(`command: npx ${nextConfig.mcpServers?.delx?.args?.join(" ") ?? nextConfig.mcp?.servers?.delx?.args?.join(" ")}`);
+  }
 }
 
 function parseArgs(argv) {
   let endpoint = process.env.DELX_MCP_URL || DEFAULT_ENDPOINT;
   const passthrough = [];
   let printConfig = null;
+  let installClient = null;
+  let dryRun = false;
   let doctor = false;
   let listTools = false;
   let json = false;
@@ -113,6 +224,21 @@ function parseArgs(argv) {
       printConfig = arg.slice("--print-config=".length) || DEFAULT_CLIENT;
       continue;
     }
+    if (arg === "install") {
+      installClient = argv[i + 1] && !argv[i + 1].startsWith("-") ? argv[i + 1] : DEFAULT_CLIENT;
+      if (installClient !== DEFAULT_CLIENT) {
+        i += 1;
+      }
+      continue;
+    }
+    if (arg.startsWith("install=")) {
+      installClient = arg.slice("install=".length) || DEFAULT_CLIENT;
+      continue;
+    }
+    if (arg === "--dry-run") {
+      dryRun = true;
+      continue;
+    }
     if (arg === "--doctor") {
       doctor = true;
       continue;
@@ -128,7 +254,7 @@ function parseArgs(argv) {
     passthrough.push(arg);
   }
 
-  return { endpoint, passthrough, printConfig, doctor, listTools, json };
+  return { endpoint, passthrough, printConfig, installClient, dryRun, doctor, listTools, json };
 }
 
 function validateEndpoint(endpoint) {
@@ -250,11 +376,15 @@ async function runListTools(endpoint, asJson = false) {
 }
 
 async function main() {
-  const { endpoint, passthrough, printConfig, doctor, listTools, json } = parseArgs(process.argv.slice(2));
+  const { endpoint, passthrough, printConfig, installClient, dryRun, doctor, listTools, json } = parseArgs(process.argv.slice(2));
   const remoteEndpoint = validateEndpoint(endpoint);
 
   if (printConfig) {
-    console.log(clientConfig(printConfig));
+    console.log(clientConfig(printConfig, remoteEndpoint));
+    return;
+  }
+  if (installClient) {
+    installClientConfig(installClient, remoteEndpoint, { dryRun, asJson: json });
     return;
   }
   if (doctor) {

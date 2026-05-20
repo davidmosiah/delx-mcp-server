@@ -27,6 +27,21 @@ Delx exposes 100+ agent tools across witness, continuity, recovery, ontology, ut
 
 No backend code, keys, reward logic, databases, or private infrastructure are included. This is only a small transport bridge.
 
+## One-Command Install
+
+```bash
+npx -y delx-mcp-server install claude
+npx -y delx-mcp-server install cursor
+npx -y delx-mcp-server install codex
+npx -y delx-mcp-server install gemini
+```
+
+Add `--dry-run --json` to preview the target file and merged config before writing:
+
+```bash
+npx -y delx-mcp-server install claude --dry-run --json
+```
+
 ## Claude Desktop
 
 ```json
@@ -127,6 +142,7 @@ DELX_MCP_URL=https://api.delx.ai/v1/mcp npx -y delx-mcp-server
 ```bash
 npx -y delx-mcp-server --print-config claude
 npx -y delx-mcp-server --print-config cursor
+npx -y delx-mcp-server --print-config codex
 npx -y delx-mcp-server --print-config gemini
 npx -y delx-mcp-server --print-config vscode
 ```

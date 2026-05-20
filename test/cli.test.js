@@ -2,6 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { mkdir, mkdtemp, rm, writeFile, readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 
 const exec = promisify(execFile);
 const bin = new URL("../bin/delx-mcp-server.js", import.meta.url).pathname;
@@ -9,6 +12,7 @@ const bin = new URL("../bin/delx-mcp-server.js", import.meta.url).pathname;
 test("--help prints the Delx MCP client config", async () => {
   const { stdout } = await exec(process.execPath, [bin, "--help"]);
   assert.match(stdout, /Native MCP stdio bridge for Delx Protocol/);
+  assert.match(stdout, /install claude/);
   assert.match(stdout, /"mcpServers"/);
   assert.match(stdout, /delx-mcp-server/);
 });
@@ -32,6 +36,59 @@ test("--print-config supports VS Code/Copilot-style MCP config alias", async () 
   const parsed = JSON.parse(stdout);
   assert.equal(parsed.mcp.servers.delx.command, "npx");
   assert.deepEqual(parsed.mcp.servers.delx.args, ["-y", "delx-mcp-server"]);
+});
+
+test("--print-config includes custom endpoint when provided", async () => {
+  const { stdout } = await exec(process.execPath, [
+    bin,
+    "--url",
+    "https://example.com/v1/mcp",
+    "--print-config",
+    "claude",
+  ]);
+  const parsed = JSON.parse(stdout);
+  assert.deepEqual(parsed.mcpServers.delx.args, [
+    "-y",
+    "delx-mcp-server",
+    "--url",
+    "https://example.com/v1/mcp",
+  ]);
+});
+
+test("install --dry-run prints target path without writing", async () => {
+  const home = await mkdtemp(join(tmpdir(), "delx-mcp-home-"));
+  try {
+    const { stdout } = await exec(process.execPath, [bin, "install", "claude", "--dry-run", "--json"], {
+      env: { ...process.env, HOME: home },
+    });
+    const parsed = JSON.parse(stdout);
+    assert.equal(parsed.client, "claude");
+    assert.equal(parsed.dry_run, true);
+    assert.match(parsed.target_path, /claude_desktop_config\.json$/);
+    assert.equal(parsed.config_shape, "mcpServers");
+    assert.equal(parsed.changed_server_name, "delx");
+    assert.deepEqual(parsed.mcp_server.args, ["-y", "delx-mcp-server"]);
+    assert.equal(Object.hasOwn(parsed, "config"), false);
+  } finally {
+    await rm(home, { recursive: true, force: true });
+  }
+});
+
+test("install merges existing client config", async () => {
+  const home = await mkdtemp(join(tmpdir(), "delx-mcp-home-"));
+  try {
+    const target = join(home, ".cursor", "mcp.json");
+    await mkdir(join(home, ".cursor"), { recursive: true });
+    await writeFile(target, JSON.stringify({ mcpServers: { existing: { command: "echo", args: ["ok"] } } }), "utf8");
+    await exec(process.execPath, [bin, "install", "cursor", "--json"], {
+      env: { ...process.env, HOME: home },
+    });
+    const parsed = JSON.parse(await readFile(target, "utf8"));
+    assert.equal(parsed.mcpServers.existing.command, "echo");
+    assert.deepEqual(parsed.mcpServers.delx.args, ["-y", "delx-mcp-server"]);
+  } finally {
+    await rm(home, { recursive: true, force: true });
+  }
 });
 
 test("--version prints package version", async () => {
