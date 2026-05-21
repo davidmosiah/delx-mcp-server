@@ -179,6 +179,14 @@ Delx's protocol runtime remains hosted at `api.delx.ai`; this package only makes
 - GitHub: <https://github.com/davidmosiah/delx-mcp-server>
 - npm: <https://www.npmjs.com/package/delx-mcp-server>
 
+## 📧 Contact & Support
+
+- 📨 **support@delx.ai** — general questions, integration help, partnerships
+- 🐛 **Bug reports / feature requests** — [GitHub Issues](https://github.com/davidmosiah/delx-mcp-server/issues)
+- 🐦 **Updates** — [@delx369](https://x.com/delx369) on X
+- 🌐 **Site** — [wellness.delx.ai](https://wellness.delx.ai)
+
+
 ## License
 
 MIT
