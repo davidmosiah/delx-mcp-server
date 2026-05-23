@@ -102,3 +102,39 @@ test("invalid endpoint fails before spawning proxy", async () => {
     /Unsupported endpoint protocol/
   );
 });
+
+test("--health --json returns the local bridge health shape", async () => {
+  const { stdout } = await exec(process.execPath, [bin, "--health", "--json"]);
+  const parsed = JSON.parse(stdout);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.server_name, "delx-mcp-server");
+  assert.match(parsed.server_version, /^\d+\.\d+\.\d+$/);
+  assert.equal(typeof parsed.uptime_seconds, "number");
+  assert.ok(parsed.uptime_seconds >= 0);
+  assert.match(parsed.node_version, /^v\d+\.\d+\.\d+/);
+  assert.ok(typeof parsed.platform === "string" && parsed.platform.length > 0);
+  assert.ok(typeof parsed.arch === "string" && parsed.arch.length > 0);
+  assert.ok(!Number.isNaN(Date.parse(parsed.timestamp)));
+});
+
+test("--health (plain text) prints the key fields", async () => {
+  const { stdout } = await exec(process.execPath, [bin, "--health"]);
+  assert.match(stdout, /delx-mcp-server health OK/);
+  assert.match(stdout, /server_version:/);
+  assert.match(stdout, /uptime_seconds:/);
+  assert.match(stdout, /node_version:/);
+  assert.match(stdout, /platform:/);
+});
+
+test("--health works without a valid endpoint (read-only)", async () => {
+  // health must not require the endpoint to be reachable or even valid.
+  const { stdout } = await exec(process.execPath, [
+    bin,
+    "--url",
+    "https://does-not-exist.example/v1/mcp",
+    "--health",
+    "--json",
+  ]);
+  const parsed = JSON.parse(stdout);
+  assert.equal(parsed.ok, true);
+});

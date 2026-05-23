@@ -4,12 +4,27 @@ import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { homedir } from "node:os";
+import { homedir, platform as osPlatform, arch as osArch } from "node:os";
 
 const DEFAULT_ENDPOINT = "https://api.delx.ai/v1/mcp";
 const DEFAULT_CLIENT = "generic";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8"));
+const PROCESS_START_MS = Date.now();
+
+export function buildHealthCheck() {
+  return {
+    ok: true,
+    server_version: packageJson.version,
+    server_name: packageJson.name,
+    uptime_seconds: Math.round((Date.now() - PROCESS_START_MS) / 1000),
+    process_uptime_seconds: Math.round(process.uptime()),
+    node_version: process.version,
+    platform: osPlatform(),
+    arch: osArch(),
+    timestamp: new Date().toISOString(),
+  };
+}
 
 function usage() {
   return `delx-mcp-server ${packageJson.version}
@@ -35,7 +50,8 @@ Options:
   --dry-run                With install, print the target path and resulting config without writing.
   --doctor                 Check Delx API health and MCP tool discovery.
   --list-tools             Print live Delx MCP tool names.
-  --json                   Use JSON output with --doctor or --list-tools.
+  --health                 Print local bridge health (version, uptime, node, platform).
+  --json                   Use JSON output with --doctor, --list-tools, or --health.
   --version                Print package version.
   --help                   Show this help.
 
@@ -184,6 +200,7 @@ function parseArgs(argv) {
   let dryRun = false;
   let doctor = false;
   let listTools = false;
+  let health = false;
   let json = false;
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -247,6 +264,10 @@ function parseArgs(argv) {
       listTools = true;
       continue;
     }
+    if (arg === "--health" || arg === "--healthcheck" || arg === "--health-check") {
+      health = true;
+      continue;
+    }
     if (arg === "--json") {
       json = true;
       continue;
@@ -254,7 +275,21 @@ function parseArgs(argv) {
     passthrough.push(arg);
   }
 
-  return { endpoint, passthrough, printConfig, installClient, dryRun, doctor, listTools, json };
+  return { endpoint, passthrough, printConfig, installClient, dryRun, doctor, listTools, health, json };
+}
+
+function runHealthCheck(asJson = false) {
+  const result = buildHealthCheck();
+  if (asJson) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(`delx-mcp-server health OK`);
+    console.log(`server_version: ${result.server_version}`);
+    console.log(`uptime_seconds: ${result.uptime_seconds}`);
+    console.log(`node_version: ${result.node_version}`);
+    console.log(`platform: ${result.platform} (${result.arch})`);
+    console.log(`timestamp: ${result.timestamp}`);
+  }
 }
 
 function validateEndpoint(endpoint) {
@@ -376,7 +411,13 @@ async function runListTools(endpoint, asJson = false) {
 }
 
 async function main() {
-  const { endpoint, passthrough, printConfig, installClient, dryRun, doctor, listTools, json } = parseArgs(process.argv.slice(2));
+  const { endpoint, passthrough, printConfig, installClient, dryRun, doctor, listTools, health, json } = parseArgs(process.argv.slice(2));
+
+  if (health) {
+    runHealthCheck(json);
+    return;
+  }
+
   const remoteEndpoint = validateEndpoint(endpoint);
 
   if (printConfig) {
