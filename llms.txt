@@ -1,0 +1,16 @@
+# delx-mcp-server
+Native MCP stdio bridge for Delx Protocol.
+
+Repository: https://github.com/davidmosiah/delx-mcp-server
+Homepage: https://delx.ai/mcp-server
+NPM: https://www.npmjs.com/package/delx-mcp-server
+Primary command: npm exec --yes --package=delx-mcp-server -- delx-mcp-server --doctor
+MCP command: delx-mcp-server
+
+- MCP registry name: io.github.davidmosiah/delx-mcp-server
+- Bridges local stdio MCP clients to `https://api.delx.ai/v1/mcp`.
+- This repo is a client bridge only. It does not contain Delx backend code, keys, databases, rewards logic, or private infrastructure.
+- Use `delx-mcp-server --doctor --json` for automation and `delx-mcp-server --list-tools --json` for live tool discovery.
+- Use `delx-mcp-server install <client> --dry-run --json` before writing MCP client config.
+- Keep secrets and local MCP config files out of chat and out of git.
+- Prefer pinned npm installs in long-lived agent runtime configs when reproducibility matters.

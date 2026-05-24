@@ -13,7 +13,9 @@
     "README.md",
     "LICENSE",
     "server.json",
-    "smithery.yaml"
+    "smithery.yaml",
+    "AGENTS.md",
+    "llms.txt"
   ],
   "scripts": {
     "doctor": "node bin/delx-mcp-server.js --doctor",
@@ -54,5 +56,8 @@
   "bugs": {
     "url": "https://github.com/davidmosiah/delx-mcp-server/issues",
     "email": "support@delx.ai"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
