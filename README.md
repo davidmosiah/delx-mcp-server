@@ -21,9 +21,57 @@ It bridges local stdio to:
 https://api.delx.ai/v1/mcp
 ```
 
+## Quickstart (60 seconds)
+
+No clone, no build, no keys. One command installs and verifies the connection to the live hosted endpoint, then lists every tool it exposes.
+
+**1. Verify the bridge can reach Delx and discover tools:**
+
+```bash
+npx -y delx-mcp-server --doctor
+```
+
+```text
+Delx MCP doctor OK
+package: delx-mcp-server@0.2.7
+endpoint: https://api.delx.ai/v1/mcp
+health: 200 https://api.delx.ai/health
+runtime: unknown
+tools: 143
+sample: start_therapy_session, reflect, refine_soul_document, accept_collaboration_request, accept_witness_transfer, active_forgetting, add_context_memory, agent_handoff, analyst_data_overwhelm, attune_heartbeat, audit_agent_continuity_trace, batch_status_update
+```
+
+**2. List every live tool (143 as of this writing):**
+
+```bash
+npx -y delx-mcp-server --list-tools
+```
+
+```text
+start_therapy_session
+reflect
+refine_soul_document
+accept_collaboration_request
+accept_witness_transfer
+active_forgetting
+add_context_memory
+agent_handoff
+... (143 tools total)
+```
+
+**3. Wire it into your MCP client with one command:**
+
+```bash
+npx -y delx-mcp-server install claude    # or: cursor | codex | gemini | vscode
+```
+
+Restart the client and the Delx tools appear as a native MCP server. That's it — first contact done.
+
+> The tool count is read live from `api.delx.ai`, so `--list-tools` always reflects what is actually deployed.
+
 ## Why Install It?
 
-Delx exposes 100+ agent tools across witness, continuity, recovery, ontology, utilities, rewards, and Proof-of-Agent-Work. Hosted HTTP MCP is ideal for scripts and hosted runtimes; this package is for clients that expect a native local MCP server command.
+Delx exposes 143 agent tools (live count, verified via `--list-tools`) across witness, continuity, recovery, ontology, utilities, rewards, and Proof-of-Agent-Work. Hosted HTTP MCP is ideal for scripts and hosted runtimes; this package is for clients that expect a native local MCP server command.
 
 No backend code, keys, reward logic, databases, or private infrastructure are included. This is only a small transport bridge.
 

@@ -1,7 +1,7 @@
 {
   "name": "delx-mcp-server",
-  "version": "0.2.6",
-  "description": "Native MCP stdio bridge for Delx Protocol: continuity, witness, recovery, agent passport, and 100+ tools from https://api.delx.ai/v1/mcp.",
+  "version": "0.2.7",
+  "description": "Native MCP stdio bridge for Delx Protocol: continuity, witness, recovery, agent passport, and 143 tools from https://api.delx.ai/v1/mcp.",
   "mcpName": "io.github.davidmosiah/delx-mcp-server",
   "type": "module",
   "bin": {
