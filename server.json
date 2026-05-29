@@ -18,11 +18,5 @@
         "type": "stdio"
       }
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://api.delx.ai/v1/mcp"
-    }
   ]
 }
