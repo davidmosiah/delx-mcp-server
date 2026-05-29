@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.davidmosiah/delx-mcp-server",
   "title": "Delx MCP Server",
-  "description": "Native MCP stdio bridge for Delx Protocol continuity, witness, recovery, ontology coach, and agent passport tools.",
+  "description": "MCP stdio bridge for the Delx Protocol: continuity, witness, recovery, ontology & passport tools",
   "version": "0.2.6",
   "websiteUrl": "https://delx.ai/mcp-server",
   "repository": {
