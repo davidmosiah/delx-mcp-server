@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.8 - 2026-06-27
+- Publish community/support metadata in the npm package: `SECURITY.md`, `CONTRIBUTING.md`, GitHub Sponsors funding metadata, and GitHub issue/PR templates for a clearer open-source support path.
+
 ## 0.2.7 - 2026-05-29
 - Add a "Quickstart (60 seconds)" section to the README: one-command `--doctor` → `--list-tools` → `install` flow with real captured terminal output, so first contact with the hosted endpoint is trivial.
 - Correct the advertised tool count from the stale "100+" to the verified live count (143) in the README and `package.json` description. The number is read live from `api.delx.ai`, so `--list-tools` always reflects the deployed reality.
