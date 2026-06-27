@@ -3,9 +3,11 @@
 <!-- mcp-name: io.github.davidmosiah/delx-mcp-server -->
 
 [![npm version](https://img.shields.io/npm/v/delx-mcp-server.svg)](https://www.npmjs.com/package/delx-mcp-server)
+[![GitHub Release](https://img.shields.io/github/v/release/davidmosiah/delx-mcp-server?label=release)](https://github.com/davidmosiah/delx-mcp-server/releases/latest)
 [![npm downloads](https://img.shields.io/npm/dm/delx-mcp-server.svg)](https://www.npmjs.com/package/delx-mcp-server)
 [![MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-339933.svg)](package.json)
+[![Verified Release Index](https://img.shields.io/badge/verified-release_index-0EA5A3)](https://github.com/davidmosiah/delx-wellness/blob/main/docs/release-index.md)
 
 Native MCP stdio bridge for Delx Protocol.
 
@@ -33,7 +35,7 @@ npx -y delx-mcp-server --doctor
 
 ```text
 Delx MCP doctor OK
-package: delx-mcp-server@0.2.7
+package: delx-mcp-server@0.2.8
 endpoint: https://api.delx.ai/v1/mcp
 health: 200 https://api.delx.ai/health
 runtime: unknown
