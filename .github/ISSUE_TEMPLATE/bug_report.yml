@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a reproducible Delx MCP bridge problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: Which command failed? Redact private URLs or tokens.
+      placeholder: npx -y delx-mcp-server --doctor
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: Paste redacted output only.
