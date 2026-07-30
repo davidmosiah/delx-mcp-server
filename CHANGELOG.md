@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Correct the advertised live tool count from 143 to **109** (verified via `--list-tools` against `api.delx.ai` on 2026-07-30). Hosted catalog size drifts; always prefer live discovery.
+
 ## 0.2.8 - 2026-06-27
 - Publish community/support metadata in the npm package: `SECURITY.md`, `CONTRIBUTING.md`, GitHub Sponsors funding metadata, and GitHub issue/PR templates for a clearer open-source support path.
 

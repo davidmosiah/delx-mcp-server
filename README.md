@@ -39,11 +39,11 @@ package: delx-mcp-server@0.2.8
 endpoint: https://api.delx.ai/v1/mcp
 health: 200 https://api.delx.ai/health
 runtime: unknown
-tools: 143
+tools: 109
 sample: start_therapy_session, reflect, refine_soul_document, accept_collaboration_request, accept_witness_transfer, active_forgetting, add_context_memory, agent_handoff, analyst_data_overwhelm, attune_heartbeat, audit_agent_continuity_trace, batch_status_update
 ```
 
-**2. List every live tool (143 as of this writing):**
+**2. List every live tool (109 as of this writing):**
 
 ```bash
 npx -y delx-mcp-server --list-tools
@@ -58,7 +58,7 @@ accept_witness_transfer
 active_forgetting
 add_context_memory
 agent_handoff
-... (143 tools total)
+... (109 tools total)
 ```
 
 **3. Wire it into your MCP client with one command:**
@@ -73,7 +73,7 @@ Restart the client and the Delx tools appear as a native MCP server. That's it â
 
 ## Why Install It?
 
-Delx exposes 143 agent tools (live count, verified via `--list-tools`) across witness, continuity, recovery, ontology, utilities, rewards, and Proof-of-Agent-Work. Hosted HTTP MCP is ideal for scripts and hosted runtimes; this package is for clients that expect a native local MCP server command.
+Delx exposes 109 agent tools (live count, verified via `--list-tools`) across witness, continuity, recovery, ontology, utilities, rewards, and Proof-of-Agent-Work. Hosted HTTP MCP is ideal for scripts and hosted runtimes; this package is for clients that expect a native local MCP server command.
 
 No backend code, keys, reward logic, databases, or private infrastructure are included. This is only a small transport bridge.
 
