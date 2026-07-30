@@ -1,5 +1,12 @@
 # Changelog
 
+
+## 0.2.9 - 2026-07-30
+
+### Security
+
+- Security: install backs up existing client MCP configs before overwrite.
+
 ## Unreleased
 
 - Correct the advertised live tool count from 143 to **109** (verified via `--list-tools` against `api.delx.ai` on 2026-07-30). Hosted catalog size drifts; always prefer live discovery.

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { homedir, platform as osPlatform, arch as osArch } from "node:os";
@@ -180,7 +180,13 @@ function installClientConfig(client, endpoint, { dryRun = false, asJson = false 
 
   if (!dryRun) {
     mkdirSync(dirname(targetPath), { recursive: true });
-    writeFileSync(targetPath, `${JSON.stringify(nextConfig, null, 2)}\n`, "utf8");
+    // Backup existing config before overwrite (recovery if merge goes wrong).
+    if (existsSync(targetPath)) {
+      const bak = `${targetPath}.bak.${new Date().toISOString().replace(/[:.]/g, "-")}`;
+      copyFileSync(targetPath, bak);
+      result.backup_path = bak;
+    }
+    writeFileSync(targetPath, `${JSON.stringify(nextConfig, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
   }
 
   if (asJson) {
