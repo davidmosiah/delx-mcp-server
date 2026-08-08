@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.davidmosiah/delx-mcp-server",
   "title": "Delx MCP Server",
-  "description": "MCP stdio bridge for the Delx Protocol: continuity, witness, recovery, ontology & passport tools",
-  "version": "0.2.9",
+  "description": "Free stdio bridge to Delx Protocol: resume after compaction, warm handoff, recover. No API key.",
+  "version": "0.3.0",
   "websiteUrl": "https://delx.ai/mcp-server",
   "repository": {
     "url": "https://github.com/davidmosiah/delx-mcp-server",
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "delx-mcp-server",
-      "version": "0.2.9",
+      "version": "0.3.0",
       "transport": {
         "type": "stdio"
       }
