@@ -6,12 +6,12 @@ startCommand:
     properties:
       endpoint:
         type: string
-        default: https://api.delx.ai/v1/mcp
+        default: https://api.delx.ai/v1/mcp?src=npm-bridge
         description: Remote Delx MCP endpoint. Keep the default unless you operate a compatible Delx deployment.
   commandFunction: |-
     (config) => ({
       command: 'npx',
-      args: ['-y', 'delx-mcp-server', '--url', config.endpoint || 'https://api.delx.ai/v1/mcp']
+      args: ['-y', 'delx-mcp-server', '--url', config.endpoint || 'https://api.delx.ai/v1/mcp?src=npm-bridge']
     })
   exampleConfig:
-    endpoint: https://api.delx.ai/v1/mcp
+    endpoint: https://api.delx.ai/v1/mcp?src=npm-bridge

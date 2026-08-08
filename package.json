@@ -1,7 +1,7 @@
 {
   "name": "delx-mcp-server",
   "version": "0.2.9",
-  "description": "Native MCP stdio bridge for Delx Protocol: continuity, witness, recovery, agent passport, and 109 tools from https://api.delx.ai/v1/mcp.",
+  "description": "Free MCP bridge for agents that lose context: resume after compaction, hand off between runtimes, recover from failure. No API key, no account, no payment.",
   "mcpName": "io.github.davidmosiah/delx-mcp-server",
   "type": "module",
   "bin": {
@@ -30,20 +30,26 @@
     "mcp-remote": "^0.1.38"
   },
   "keywords": [
-    "delx",
-    "mcp",
-    "model-context-protocol",
-    "claude",
-    "cursor",
-    "gemini",
-    "copilot",
-    "ai-agent",
-    "agent-tools",
-    "witness-protocol",
     "agent-continuity",
+    "agent-handoff",
+    "agent-tools",
+    "ai-agent",
+    "claude",
+    "compaction",
+    "context-loss",
+    "continuity",
+    "copilot",
+    "cursor",
+    "delx",
+    "free",
+    "gemini",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
     "proof-of-agent-work",
+    "resume",
     "stdio",
-    "mcp-server"
+    "witness-protocol"
   ],
   "engines": {
     "node": ">=18.0.0"

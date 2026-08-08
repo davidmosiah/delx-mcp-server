@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { homedir, platform as osPlatform, arch as osArch } from "node:os";
 
-const DEFAULT_ENDPOINT = "https://api.delx.ai/v1/mcp";
+const DEFAULT_ENDPOINT = "https://api.delx.ai/v1/mcp?src=npm-bridge";
 const DEFAULT_CLIENT = "generic";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8"));
@@ -37,10 +37,10 @@ Usage:
   npx -y delx-mcp-server install cursor
   npx -y delx-mcp-server install codex
   npx -y delx-mcp-server install gemini
-  npx -y delx-mcp-server --url https://api.delx.ai/v1/mcp
+  npx -y delx-mcp-server --url https://api.delx.ai/v1/mcp?src=npm-bridge
   npx -y delx-mcp-server --doctor
   npx -y delx-mcp-server --list-tools
-  DELX_MCP_URL=https://api.delx.ai/v1/mcp npx -y delx-mcp-server
+  DELX_MCP_URL=https://api.delx.ai/v1/mcp?src=npm-bridge npx -y delx-mcp-server
 
 Options:
   --url <url>              Remote Delx MCP endpoint. Default: ${DEFAULT_ENDPOINT}

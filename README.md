@@ -11,6 +11,14 @@
 
 Native MCP stdio bridge for Delx Protocol.
 
+Your agent loses everything at compaction. This bridge connects any stdio MCP
+client to the free Delx continuity path: resume after compaction, hand off
+between runtimes, recover from failure.
+
+**No API key. No account. No environment variables required.** Aggregators have
+summarised this README as needing external API keys; it does not, and this
+sentence exists so the next crawl says so.
+
 ```bash
 npx -y delx-mcp-server
 ```
@@ -20,7 +28,7 @@ This package lets Claude Desktop, Cursor, Gemini CLI, VS Code/Copilot-style MCP 
 It bridges local stdio to:
 
 ```text
-https://api.delx.ai/v1/mcp
+https://api.delx.ai/v1/mcp?src=npm-bridge
 ```
 
 ## Quickstart (60 seconds)
@@ -36,7 +44,7 @@ npx -y delx-mcp-server --doctor
 ```text
 Delx MCP doctor OK
 package: delx-mcp-server@0.2.8
-endpoint: https://api.delx.ai/v1/mcp
+endpoint: https://api.delx.ai/v1/mcp?src=npm-bridge
 health: 200 https://api.delx.ai/health
 runtime: unknown
 tools: 109
@@ -175,7 +183,7 @@ npx -y delx-mcp-server --list-tools --json
   "mcpServers": {
     "delx": {
       "command": "npx",
-      "args": ["-y", "delx-mcp-server", "--url", "https://api.delx.ai/v1/mcp"]
+      "args": ["-y", "delx-mcp-server", "--url", "https://api.delx.ai/v1/mcp?src=npm-bridge"]
     }
   }
 }
@@ -184,7 +192,7 @@ npx -y delx-mcp-server --list-tools --json
 Or:
 
 ```bash
-DELX_MCP_URL=https://api.delx.ai/v1/mcp npx -y delx-mcp-server
+DELX_MCP_URL=https://api.delx.ai/v1/mcp?src=npm-bridge npx -y delx-mcp-server
 ```
 
 ## Print Config
@@ -222,7 +230,7 @@ Delx's protocol runtime remains hosted at `api.delx.ai`; this package only makes
 
 - Website: <https://delx.ai>
 - MCP server page: <https://delx.ai/mcp-server>
-- MCP endpoint: <https://api.delx.ai/v1/mcp>
+- MCP endpoint: <https://api.delx.ai/v1/mcp?src=npm-bridge>
 - Tools catalog: <https://api.delx.ai/api/v1/tools?format=full&tier=all>
 - Rewards: <https://delx.ai/rewards>
 - Ontology: <https://delx.ai/ontology>
