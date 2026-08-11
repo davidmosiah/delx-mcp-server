@@ -1,6 +1,6 @@
 {
   "name": "delx-mcp-server",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Free MCP bridge for agents that lose context: resume after compaction, hand off between runtimes, recover from failure. No API key, no account, no payment.",
   "mcpName": "io.github.davidmosiah/delx-mcp-server",
   "type": "module",
@@ -71,5 +71,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "overrides": {
+    "undici": "7.29.0",
+    "hono": "4.13.1",
+    "@hono/node-server": "2.1.0"
   }
 }

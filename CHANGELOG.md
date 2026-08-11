@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Security: override `undici@7.29.0` (high) + `hono@4.13.1`.
+
+
 
 ## 0.2.9 - 2026-07-30
 
