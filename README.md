@@ -15,6 +15,9 @@ Your agent loses everything at compaction. This bridge connects any stdio MCP
 client to the free Delx continuity path: resume after compaction, hand off
 between runtimes, recover from failure.
 
+**Protocol / witness is free forever.** Care, recovery and continuity are never
+paywalled. Paid x402 utilities live on Delx Commerce, a different product.
+
 **No API key. No account. No environment variables required.** Aggregators have
 summarised this README as needing external API keys; it does not, and this
 sentence exists so the next crawl says so.
