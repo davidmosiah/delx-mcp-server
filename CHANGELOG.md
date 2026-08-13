@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+
+- Bind the default bridge, install examples, Smithery configuration, and agent-facing discovery copy to the bounded Delx Protocol endpoint.
+- Exclude the separate Commerce catalog from default stdio discovery and refresh the verified live Protocol tool count to 30.
+
 ## 0.3.1
 
 - Security: override `undici@7.29.0` (high) + `hono@4.13.1`.

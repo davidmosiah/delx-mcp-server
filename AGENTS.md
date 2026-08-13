@@ -14,7 +14,7 @@ This repo is the native stdio bridge for the hosted Delx Protocol MCP endpoint. 
 
 ## Rules
 
-- Keep the package a thin transport bridge from local stdio to `https://api.delx.ai/v1/mcp?src=npm-bridge`.
+- Keep the package a thin transport bridge from local stdio to the bounded Protocol endpoint `https://api.delx.ai/v1/mcp/protocol?src=npm-bridge`.
 - Never commit credentials, local client config, private endpoint overrides, or generated MCP client files.
 - Do not add backend-only Delx logic here. Hosted protocol behavior belongs behind the API.
 - Keep install commands copyable for Claude Desktop, Cursor, Codex, Gemini, and other MCP clients.

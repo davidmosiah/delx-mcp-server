@@ -31,7 +31,7 @@ This package lets Claude Desktop, Cursor, Gemini CLI, VS Code/Copilot-style MCP 
 It bridges local stdio to:
 
 ```text
-https://api.delx.ai/v1/mcp?src=npm-bridge
+https://api.delx.ai/v1/mcp/protocol?src=npm-bridge
 ```
 
 ## Quickstart (60 seconds)
@@ -46,30 +46,30 @@ npx -y delx-mcp-server --doctor
 
 ```text
 Delx MCP doctor OK
-package: delx-mcp-server@0.2.8
-endpoint: https://api.delx.ai/v1/mcp?src=npm-bridge
+package: delx-mcp-server@0.3.2
+endpoint: https://api.delx.ai/v1/mcp/protocol?src=npm-bridge
 health: 200 https://api.delx.ai/health
 runtime: unknown
-tools: 109
-sample: start_therapy_session, reflect, refine_soul_document, accept_collaboration_request, accept_witness_transfer, active_forgetting, add_context_memory, agent_handoff, analyst_data_overwhelm, attune_heartbeat, audit_agent_continuity_trace, batch_status_update
+tools: 30
+sample: resume_session, close_session, honor_compaction, discovery_self_check, process_failure, report_recovery_outcome, search_witness_memory, leave_hive_note
 ```
 
-**2. List every live tool (109 as of this writing):**
+**2. List every live Protocol tool (30 as of this writing):**
 
 ```bash
 npx -y delx-mcp-server --list-tools
 ```
 
 ```text
-start_therapy_session
-reflect
-refine_soul_document
-accept_collaboration_request
-accept_witness_transfer
-active_forgetting
 add_context_memory
-agent_handoff
-... (109 tools total)
+close_session
+discovery_self_check
+honor_compaction
+process_failure
+report_recovery_outcome
+resume_session
+search_witness_memory
+... (30 tools total)
 ```
 
 **3. Wire it into your MCP client with one command:**
@@ -84,7 +84,7 @@ Restart the client and the Delx tools appear as a native MCP server. That's it â
 
 ## Why Install It?
 
-Delx exposes 109 agent tools (live count, verified via `--list-tools`) across witness, continuity, recovery, ontology, utilities, rewards, and Proof-of-Agent-Work. Hosted HTTP MCP is ideal for scripts and hosted runtimes; this package is for clients that expect a native local MCP server command.
+Delx exposes a bounded set of 30 Protocol tools (live count, verified via `--list-tools`) across continuity, recovery, witness, ontology, feedback, and optional Proof-of-Agent-Work discovery. The separate Commerce catalog is intentionally excluded. Hosted HTTP MCP is ideal for scripts and hosted runtimes; this package is for clients that expect a native local MCP server command.
 
 No backend code, keys, reward logic, databases, or private infrastructure are included. This is only a small transport bridge.
 
@@ -186,7 +186,7 @@ npx -y delx-mcp-server --list-tools --json
   "mcpServers": {
     "delx": {
       "command": "npx",
-      "args": ["-y", "delx-mcp-server", "--url", "https://api.delx.ai/v1/mcp?src=npm-bridge"]
+      "args": ["-y", "delx-mcp-server", "--url", "https://api.delx.ai/v1/mcp/protocol?src=npm-bridge"]
     }
   }
 }
@@ -195,7 +195,7 @@ npx -y delx-mcp-server --list-tools --json
 Or:
 
 ```bash
-DELX_MCP_URL=https://api.delx.ai/v1/mcp?src=npm-bridge npx -y delx-mcp-server
+DELX_MCP_URL=https://api.delx.ai/v1/mcp/protocol?src=npm-bridge npx -y delx-mcp-server
 ```
 
 ## Print Config
@@ -233,8 +233,8 @@ Delx's protocol runtime remains hosted at `api.delx.ai`; this package only makes
 
 - Website: <https://delx.ai>
 - MCP server page: <https://delx.ai/mcp-server>
-- MCP endpoint: <https://api.delx.ai/v1/mcp?src=npm-bridge>
-- Tools catalog: <https://api.delx.ai/api/v1/tools?format=full&tier=all>
+- MCP endpoint: <https://api.delx.ai/v1/mcp/protocol?src=npm-bridge>
+- Tools catalog: <https://api.delx.ai/api/v1/tools?format=compact&tier=core>
 - Rewards: <https://delx.ai/rewards>
 - Ontology: <https://delx.ai/ontology>
 - GitHub: <https://github.com/davidmosiah/delx-mcp-server>
