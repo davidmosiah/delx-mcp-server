@@ -1,0 +1,82 @@
+name: Publish Delx stdio bridge to MCP Registry
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MANIFEST: server.json
+      MCP_PUBLISHER_VERSION: v1.8.0
+      MCP_PUBLISHER_SHA256: 1370446bbe74d562608e8005a6ccce02d146a661fbd78674e11cc70b9618d6cf
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Check immutable Registry version
+        id: preflight
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+
+          manifest = json.load(open(os.environ["MANIFEST"], encoding="utf-8"))
+          query = urllib.parse.urlencode({"search": manifest["name"]})
+          with urllib.request.urlopen(
+              f"https://registry.modelcontextprotocol.io/v0.1/servers?{query}",
+              timeout=30,
+          ) as response:
+              payload = json.load(response)
+          published = next(
+              (
+                  row["server"]
+                  for row in payload.get("servers", [])
+                  if row.get("server", {}).get("name") == manifest["name"]
+                  and row.get("server", {}).get("version") == manifest["version"]
+              ),
+              None,
+          )
+          output = os.environ["GITHUB_OUTPUT"]
+          if published is None:
+              with open(output, "a", encoding="utf-8") as handle:
+                  handle.write("should_publish=true\n")
+              raise SystemExit(0)
+
+          fields = ("name", "title", "description", "version", "websiteUrl", "repository", "packages")
+          expected = {field: manifest.get(field) for field in fields}
+          actual = {field: published.get(field) for field in fields}
+          if actual != expected:
+              raise SystemExit(
+                  "This Registry version already exists with different metadata; bump manifest.version."
+              )
+          with open(output, "a", encoding="utf-8") as handle:
+              handle.write("should_publish=false\n")
+          print("Identical immutable Registry version already exists; nothing to publish.")
+          PY
+
+      - name: Install pinned mcp-publisher
+        if: steps.preflight.outputs.should_publish == 'true'
+        run: |
+          set -euo pipefail
+          archive="mcp-publisher_linux_amd64.tar.gz"
+          curl -fsSL \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${archive}" \
+            -o "$archive"
+          echo "${MCP_PUBLISHER_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xzf "$archive" mcp-publisher
+          chmod +x mcp-publisher
+
+      - name: Authenticate with GitHub OIDC
+        if: steps.preflight.outputs.should_publish == 'true'
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish stdio bridge manifest
+        if: steps.preflight.outputs.should_publish == 'true'
+        run: ./mcp-publisher publish "$MANIFEST"
