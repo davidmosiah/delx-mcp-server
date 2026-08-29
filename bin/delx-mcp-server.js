@@ -270,6 +270,16 @@ function parseArgs(argv) {
       listTools = true;
       continue;
     }
+    if (arg === "call") {
+      const tool = argv[i + 1];
+      if (tool === "health" || tool === "delx_health") {
+        health = true;
+        json = true;
+        i += 1;
+        continue;
+      }
+      throw new Error(`Unknown tool: ${tool || ""}. Tools: health`);
+    }
     if (arg === "--health" || arg === "--healthcheck" || arg === "--health-check") {
       health = true;
       continue;

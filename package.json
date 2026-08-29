@@ -1,6 +1,6 @@
 {
   "name": "delx-mcp-server",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Free MCP bridge for agents that lose context: resume after compaction, hand off between runtimes, recover from failure. No API key, no account, no payment.",
   "mcpName": "io.github.davidmosiah/delx-mcp-server",
   "type": "module",
@@ -17,14 +17,16 @@
     "server.json",
     "smithery.yaml",
     "AGENTS.md",
-    "llms.txt"
+    "llms.txt",
+    "skill"
   ],
   "scripts": {
     "doctor": "node bin/delx-mcp-server.js --doctor",
     "list-tools": "node bin/delx-mcp-server.js --list-tools",
     "health": "node bin/delx-mcp-server.js --health",
-    "test": "node --test",
-    "prepublishOnly": "npm test"
+    "test": "node --test && npm run test:skill-surface",
+    "prepublishOnly": "npm test",
+    "test:skill-surface": "node scripts/test-skill-surface.mjs"
   },
   "dependencies": {
     "mcp-remote": "^0.1.38"

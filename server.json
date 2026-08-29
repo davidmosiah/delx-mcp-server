@@ -3,7 +3,7 @@
   "name": "io.github.davidmosiah/delx-mcp-server",
   "title": "Delx MCP Server",
   "description": "Free stdio bridge to Delx Protocol: resume after compaction, warm handoff, recover. No API key.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "websiteUrl": "https://delx.ai/mcp-server",
   "repository": {
     "url": "https://github.com/davidmosiah/delx-mcp-server",
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "delx-mcp-server",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "transport": {
         "type": "stdio"
       }
