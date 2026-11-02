@@ -6,7 +6,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/davidmosiah/delx-mcp-server?label=release)](https://github.com/davidmosiah/delx-mcp-server/releases/latest)
 [![npm downloads](https://img.shields.io/npm/dm/delx-mcp-server.svg)](https://www.npmjs.com/package/delx-mcp-server)
 [![MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D18-339933.svg)](package.json)
+[![Node](https://img.shields.io/badge/node-%3E%3D20.18.1-339933.svg)](package.json)
 [![Verified Release Index](https://img.shields.io/badge/verified-release_index-0EA5A3)](https://github.com/davidmosiah/delx-wellness/blob/main/docs/release-index.md)
 
 Native MCP stdio bridge for Delx Protocol.
@@ -251,3 +251,10 @@ Delx's protocol runtime remains hosted at `api.delx.ai`; this package only makes
 ## License
 
 MIT
+
+
+## Runtime and dependency validation
+
+Node.js **20.18.1 or newer** is required, matching the existing undici7 dependency contract. Earlier Node18 support advertised by this bridge was inconsistent with its dependency graph. CI currently exercises Node22; local regression validation also uses Node24.
+
+Dependency overrides select body-parser1.20.9, proxy-addr2.0.8, qs6.16.1 and undici7.30.1. Offline tests exercise the patched libraries with synthetic input and an undici MockAgent that disables real connections. No hosted MCP endpoint, OAuth account or credential is needed for `npm test`. A clean npm audit describes resolved dependency metadata only; it does not audit vendored code bundled inside mcp-remote or certify the hosted service.
