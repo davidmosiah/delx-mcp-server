@@ -12,9 +12,10 @@ import { parseAdapterOptions } from '../lib/options.js';
 import { auth } from '@modelcontextprotocol/sdk/client/auth.js';
 import { CredentialStore, IsolatedOAuthProvider } from '../lib/oauth.js';
 import { createSafeFetch } from '../lib/network.js';
+import { createAuthenticatedFetch } from '../lib/auth-coordinator.js';
 
 test('real SDK OAuth discovery, dynamic registration, PKCE exchange and refresh use only local fixtures',async()=>{
-  let origin,challenge,foreign=false;const grants=[];
+  let origin,challenge,foreign=false,failNextCodeExchange=false;const grants=[];
   const server=createServer(async(req,res)=>{
     res.setHeader('content-type','application/json');
     const url=new URL(req.url,origin);
@@ -31,6 +32,7 @@ test('real SDK OAuth discovery, dynamic registration, PKCE exchange and refresh 
       assert.equal(params.get('client_id'),'fixture-client');
       if(params.get('grant_type')==='authorization_code')assert.equal(createHash('sha256').update(params.get('code_verifier')).digest('base64url'),challenge);
       else assert.equal(params.get('refresh_token'),'fixture-refresh');
+      if(failNextCodeExchange && params.get('grant_type')==='authorization_code'){failNextCodeExchange=false;res.writeHead(500);return res.end(JSON.stringify({error:'server_error'}));}
       return res.end(JSON.stringify({access_token:'fixture-access',token_type:'Bearer',refresh_token:'fixture-refresh',expires_in:60}));
     }
     res.writeHead(404);res.end('{}');
@@ -73,6 +75,16 @@ test('real SDK OAuth discovery, dynamic registration, PKCE exchange and refresh 
       const [bytes]=await response;assert.equal(JSON.parse(bytes).id,9);input.end();await running;
       assert.deepEqual(grants,['authorization_code','refresh_token','authorization_code']);
     } finally {input.destroy();await running.catch(()=>{});}
+    // A transient code-exchange failure must release its PKCE flow immediately,
+    // without waiting two minutes for the interactive authorization timeout.
+    await provider.invalidateCredentials('tokens');failNextCodeExchange=true;
+    const coordinated=createAuthenticatedFetch({provider,endpoint:origin+'/mcp',fetchFn});
+    const request={method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:12,method:'tools/list'})};
+    await assert.rejects(coordinated(origin+'/mcp',request));
+    assert.throws(()=>provider.authorizationFlow(),/No active/);
+    const retried=await coordinated(origin+'/mcp',request);
+    assert.equal(retried.status,200);assert.equal((await retried.json()).id,12);
+    await coordinated.close();
   } finally {await provider.close();await store.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await rm(home,{recursive:true,force:true});}
 });
 
