@@ -7,7 +7,7 @@ startCommand:
       endpoint:
         type: string
         default: https://api.delx.ai/v1/mcp/protocol?src=npm-bridge
-        description: Remote Delx MCP endpoint. Keep the default unless you operate a compatible Delx deployment.
+        description: Remote Delx Protocol MCP endpoint (free agent continuity, recovery, and witness). Keep the default unless you operate a compatible Delx deployment.
   commandFunction: |-
     (config) => ({
       command: 'npx',
